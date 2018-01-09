@@ -1,0 +1,1 @@
+# threatstack-aws-sns-publisher
