@@ -1,0 +1,4 @@
+# Locks boto on deployment and don't have to worry about underlying Lambda
+# container's version introducing breaking change.
+boto3
+

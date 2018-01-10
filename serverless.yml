@@ -1,0 +1,160 @@
+service: threatstack-aws-sns-publisher
+
+plugins:
+  - serverless-python-requirements
+
+
+custom:
+  stage: "${opt:stage, env:SLS_STAGE, 'dev'}"
+  profile: "${opt:aws-profile, env:AWS_PROFILE, env:AWS_DEFAULT_PROFILE, 'default'}"
+  endpoint_path: "${self:service}/api/v2/alert"
+
+  # Ensure consistent build environment; also avoid issue deploying from Mac
+  # with Homebrew Python.
+  pythonRequirements:
+    dockerizePip: true
+
+provider:
+  name: aws
+  profile: ${self:custom.profile}
+  stage: ${self:custom.stage}
+  runtime: python3.6
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "SNS:GetTopicAttributes"
+        - "SNS:Publish"
+      Resource:
+        Fn::Join:
+          - ":"
+          - - "arn:aws:sns"
+            - Ref: "AWS::Region"
+            - Ref: "AWS::AccountId"
+            - Fn::GetAtt:
+              - "SnsTopic"
+              - "TopicName"
+
+
+functions:
+  ThreatStackAwsSnsPublisher:
+    description: "Receive Threat Stack webhooks, lookup alert detail data, and publish to SNS."
+    handler: handlers/threatstack-aws-sns-publisher.handler
+    memorySize: 128
+    timeout: 15
+    environment:
+      AWS_SNS_TOPIC:
+        Fn::GetAtt:
+          - SnsTopic
+          - TopicName
+    events:
+      - http:
+          method: POST
+          path: "${self:service}/api/v2/alert"
+
+
+resources:
+  Resources:
+    SnsTopic:
+      Type: "AWS::SNS::Topic"
+
+    SnsTopicPolicy:
+      Type: "AWS::SNS::TopicPolicy"
+      Properties:
+        PolicyDocument: {
+          "Version": "2008-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Action": [
+                "SNS:GetTopicAttributes",
+                "SNS:SetTopicAttributes",
+                "SNS:AddPermission",
+                "SNS:RemovePermission",
+                "SNS:DeleteTopic",
+                "SNS:Subscribe",
+                "SNS:ListSubscriptionsByTopic",
+                "SNS:Publish",
+                "SNS:Receive"
+              ],
+              "Resource": {
+                "Fn::Join": [
+                  ":",
+                  [
+                    "arn:aws:sns",
+                    Ref: "AWS::Region",
+                    Ref: "AWS::AccountId",
+                    Fn::GetAtt: ["SnsTopic", "TopicName"]
+                  ]
+                ]
+              },
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceOwner": {
+                    "Ref": "AWS::AccountId"
+                  }
+                }
+              }
+            }
+          ]
+        }
+        Topics:
+          - Ref: SnsTopic
+
+    SnsConfirmSubscriptionIamManagedPolicy:
+      Type: "AWS::IAM::ManagedPolicy"
+      Properties:
+        Description: "Confirm SNS topic subscription"
+        PolicyDocument: {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "sns:ConfirmSubscription"
+              ],
+              "Resource": [
+                {
+                  "Ref": "SnsTopic"
+                }
+              ]
+            }
+          ]
+        }
+
+  Outputs:
+    SnsTopicArn:
+      Description: "SNS Topic ARN; used by deployed subscribers"
+      Value:
+        Ref: "SnsTopic"
+
+    SnsConfirmSubscriptionIamManagedPolicyArn:
+      Description: "ARN of IAM managed policy for subscription confirmation"
+      Value:
+        Ref: "SnsConfirmSubscriptionIamManagedPolicy"
+      Export:
+        Name:
+          Fn::Join:
+            - "-"
+            - - Ref: "AWS::StackName"
+              - "SnsConfirmSubscriptionIamManagedPolicyArn"
+
+    WebHookEndpoint:
+      Description: "Webhook endpoint"
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api.us-east-1.amazonaws.com/${self:provider.stage}"
+            - "/${self:custom.endpoint_path}"
+
+      Export:
+        Name:
+          Fn::Join:
+            - "-"
+            - - Ref: "AWS::StackName"
+              - "WebHookEndpoint"
+
