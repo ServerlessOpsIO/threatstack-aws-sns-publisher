@@ -9,6 +9,10 @@ custom:
   profile: "${opt:aws-profile, env:AWS_PROFILE, env:AWS_DEFAULT_PROFILE, 'default'}"
   endpoint_path: "${self:service}/api/v2/alert"
 
+  # Threat Stack setup
+  threatstack_api_key: "${env:THREATSTACK_API_KEY}"
+  threatstack_org_id: "${env:THREATSTACK_ORG_ID}"
+
   # Ensure consistent build environment; also avoid issue deploying from Mac
   # with Homebrew Python.
   pythonRequirements:
@@ -36,6 +40,8 @@ functions:
     environment:
       AWS_SNS_TOPIC_ARN:
         Ref: SnsTopic
+      THREATSTACK_API_KEY: "${self:custom.threatstack_api_key}"
+      THREATSTACK_ORG_ID: "${self:custom.threatstack_org_id}"
     events:
       - http:
           method: POST
