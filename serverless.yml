@@ -25,15 +25,7 @@ provider:
         - "SNS:GetTopicAttributes"
         - "SNS:Publish"
       Resource:
-        Fn::Join:
-          - ":"
-          - - "arn:aws:sns"
-            - Ref: "AWS::Region"
-            - Ref: "AWS::AccountId"
-            - Fn::GetAtt:
-              - "SnsTopic"
-              - "TopicName"
-
+        Ref: SnsTopic
 
 functions:
   ThreatStackAwsSnsPublisher:
@@ -42,10 +34,8 @@ functions:
     memorySize: 128
     timeout: 15
     environment:
-      AWS_SNS_TOPIC:
-        Fn::GetAtt:
-          - SnsTopic
-          - TopicName
+      AWS_SNS_TOPIC_ARN:
+        Ref: SnsTopic
     events:
       - http:
           method: POST
