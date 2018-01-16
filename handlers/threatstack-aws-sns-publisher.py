@@ -13,7 +13,13 @@ _logger = logging.getLogger(__name__)
 # Initialize client.
 THREATSTACK_API_KEY = os.environ.get('THREATSTACK_API_KEY')
 THREATSTACK_ORG_ID  = os.environ.get('THREATSTACK_ORG_ID')
-threatstack_client = ThreatStack(api_key=THREATSTACK_API_KEY, org_id=THREATSTACK_ORG_ID)
+THREATSTACK_USER_ID  = os.environ.get('THREATSTACK_USER_ID')
+
+threatstack_client = ThreatStack(
+    api_key=THREATSTACK_API_KEY,
+    org_id=THREATSTACK_ORG_ID,
+    user_id=THREATSTACK_USER_ID
+)
 
 # Initialize AWS client
 AWS_SNS_TOPIC_ARN = os.environ.get('AWS_SNS_TOPIC_ARN')

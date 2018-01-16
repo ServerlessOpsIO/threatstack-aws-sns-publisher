@@ -12,6 +12,7 @@ custom:
   # Threat Stack setup
   threatstack_api_key: "${env:THREATSTACK_API_KEY}"
   threatstack_org_id: "${env:THREATSTACK_ORG_ID}"
+  threatstack_user_id: "${env:THREATSTACK_USER_ID}"
 
   # Ensure consistent build environment; also avoid issue deploying from Mac
   # with Homebrew Python.
@@ -42,6 +43,7 @@ functions:
         Ref: SnsTopic
       THREATSTACK_API_KEY: "${self:custom.threatstack_api_key}"
       THREATSTACK_ORG_ID: "${self:custom.threatstack_org_id}"
+      THREATSTACK_USER_ID: "${self:custom.threatstack_user_id}"
     events:
       - http:
           method: POST
