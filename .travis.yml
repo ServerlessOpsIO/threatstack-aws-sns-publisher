@@ -1,0 +1,33 @@
+env:
+  global:
+    DIST_DIR="${PWD}/dist"
+    PROJECT_NAME=$(basename ${PWD})
+    ARTIFACT_ID="${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}"
+
+sudo: required
+services:
+- docker
+language: python
+python:
+- '3.6'
+install:
+- npm install -g serverless
+- npm install
+script:
+- true
+after_success:
+- sls package -v -s dev -r us-east-1 -p $DIST_DIR
+- rm -rf $DIST_DIR/requirements
+deploy:
+  skip_cleanup: true
+  provider: s3
+  bucket: serverlessops-opensource-deploy-dev
+  upload_dir: ${PROJECT_NAME}/${ARTIFACT_ID}
+  local_dir: $DIST_DIR
+  acl: public_read
+  on:
+    repo: $TRAVIS_REPO_SLUG
+  access_key_id:
+    secure: igeKleyI3dmrXYQwrIQlG/mlOGKWzyoLlO/Pg0D3i7ewMmOFL1UqH5fKl7UYtnZS8IT1MGjK6cGVeqtUPDa95IjpKOWw7NiZAx3XqJUZjvU/Yj34EJ2eLxSEnMDvbEzQJXDGKJd+leQaoILPZezpdiAUT2OIuZkYdqKk7/T6sNWZ2/0H+SNErZMKKfNWHYjqPPJEUZ2u4+IuO6w/oqfvMUNxCeCYVrxKAnDJieUgZSy4i72+UP9pB6zA1bto1Pa9Tv/LbIuUqvqsjROHFOSIyWqkA/UNrvk/yb6HhZlAcuO4ogZAHsJ6gs4lDg80kDPnoeuOyqYnj+uT1keebFLNhpmOUoTKejdCivWFQ8zO6EYzWB0h6dun5/7e3+01rWA2M2f8XsSPC+ns7A6hx0+KNIJtvWITgylBtgCoDqPTH5AL81+wCjilsWJeHpPC2o/tHdCjNmXY5ye6JCef39hFBaR0KmgXUHw+XHDinguBSxi8nsf312AqhK/2FXpi6h8DIhxGsGEZerPEh1Od55ggUsB0tJur0QTTWxtFCI7TlxAVXG/7orC8NmB/NHNnIpK+O00/xmhD5NDqck82ezXNPbPqviC5CqNeEXpgtY465Z1Gptq0PnYyEZqX9XEA2n7T0cOPs/V16EpKM0fgLwoRo+EeZqgIQgPNMu3MXMQcOG0=
+  secret_access_key:
+    secure: XalOOu1DcOhpXPxcK2PwW62ECFhAj+qwst2F518Hto0fA5RAWDF1R1iacjk9Gz9RRhOnR3qh1GxXVb/MJDUqhY2Qcxn0ov46iViVlHbSB8XHyl3S9JB3kfrxR49WGZcMFd7cZxsmu7nJiiqkIgqR4WJ0TSRA+fUNj1ZXHII6ogB58PaG5E29Mbq8xXPIc/CXH043wNPEiHBTu8TZawXGZzpTFM7ntr16MUlSq1Wrg/cKO0HtWYY5neijJav0YsfX0d9ZKAS7DAK8CT7IUxIZ5mvPeeJOmyGswFau+1Wc6Hl+uwSAHy0ANmXrP8vaS3Ohmb369JRzWVg/XBfU5Su7J7XfZPjDGuUkEWBBI/VEBDZz7Bs1I5moi4OWwtpNf0d73sVHlpJdXQOoFsc2fN42gyhBKrbktAAYFNGz7klhWp50BjK2paBxnUTRkqpBtIGhKM0C8J64BX7kKVlLXz5ndhaDzqz0hKU5+oRtRAWhSRTfXslvNeR2IPdUENUAoV/W9sZUJnct6ejx7m9kMaWHeHz4FgXZPV5VfwWs0DVJFve7mLSXSVyoqPkHO3V6x9//uCkfn4OqYbiuP+kIY1SVdYiwhK3AiCO1I5i1tMMqRFLrMzUGkLbva7/HCrM41UDH9U9V63UlPW0n6nEL2pPsj49SUi+enwZ70n1jr/iGKUs=
