@@ -39,4 +39,4 @@ deploy:
 # README.md is updated if this ever changes to a new location.
 after_deploy:
 - pip install awscli
-- aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${PROJECT_NAME}/${ARTIFACT_ID}/cloudformation-template-update-stack.json"
+- aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${PROJECT_NAME}/${ARTIFACT_ID}/cloudformation-template-update-stack.json" --metadata Cache-Control=60
