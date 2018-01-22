@@ -4,6 +4,7 @@ env:
   - PROJECT_NAME=$(basename ${PWD})
   - ARTIFACT_ID="${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}"
   - S3_BUCKET="serverlessops-opensource-deploy-dev"
+  - AWS_SAM_TMPL_NAME="sam-template.yml"
   - AWS_DEFAULT_REGION="us-east-1"
   # AWS_ACCESS_KEY_ID
   - secure: Kc3KdmqaCCSu6PhkqtG2kI8xb+5YdKwpxzNXhDzszdOf6j/PLC+oaJWEpwsYymuH6jyy9ApyoQ77wXcHV5nVgSa3fMldcuy8nsaqPEq1uyTF3nQiYrK8Idr70o04/v07Jy8tFWGYNDQTVkoywbs1hsbmRiV97Wf+GTAr13OVIE7YfwBH7LZzh0O0l0nkE8HQbBUe+P1yoSVVco4T6pCYjBgj26fPXNmS24Iz2MqPceus264DC6zNLpE7CxAKLXi0T9i3+fGheUuwhXa95COc3QaKzbgN1P4osWn3Hs+BKTE4GMg87yM9ECGIiCTHPyNFJCa5l6LQxS+RrTx2tXMdiR1FjVyGReOWPe3St6sPork+kjWghq+V300c/EqGPYwe52isUBiIUo8NZ8wVz5o22x3CXxAWtA8r7gC4kvCI2qsJjaviIMgTHXOtF62a1MpYUICNMkhj+Y38cBfnyJi9K8IL43+I8Lv1/Md3gVZRfi+g/GHBCkRsuQL07fS/8bzqoKkThhgSpRrPnDwG/vLsJKEjqeEuga4DrgWfCw3hQEI45FYoErxQ7pHUJBPeHafue0QtpjBp9KfSfLOJ+odEiEAowk6KD4Zw5tvkHXldmjA8TTvaXOKhhvaLTiUgUDGnhB6ttDWOUXJNte6XvjNAtcu8GE2na+QZXS0nMjdgLZ8=
@@ -22,7 +23,8 @@ script:
 - true
 after_success:
 - sls package -v -s dev -r us-east-1 -p $DIST_DIR
-- rm -rf $DIST_DIR/requirements
+- sls sam export --output ${DIST_DIR}/${AWS_SAM_TMPL_NAME}
+- rm -rf ${DIST_DIR}/requirements
 deploy:
   skip_cleanup: true
   provider: s3
@@ -40,3 +42,4 @@ deploy:
 after_deploy:
 - pip install awscli
 - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${PROJECT_NAME}/${ARTIFACT_ID}/cloudformation-template-update-stack.json" --metadata Cache-Control=60
+- aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/${PROJECT_NAME}/${ARTIFACT_ID}/${AWS_SAM_TMPL_NAME}" --metadata Cache-Control=60

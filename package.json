@@ -6,5 +6,6 @@
   "devDependencies": {
     "serverless-cloudformation-parameter-setter": "0.0.1",
     "serverless-python-requirements": "^3.2.1",
+    "serverless-sam": "0.0.4"
   }
 }
