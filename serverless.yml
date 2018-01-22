@@ -2,7 +2,7 @@ service: threatstack-aws-sns-publisher
 
 plugins:
   - serverless-python-requirements
-
+  - serverless-parameters
 
 custom:
   stage: "${opt:stage, env:SLS_STAGE, 'dev'}"
@@ -10,9 +10,19 @@ custom:
   endpoint_path: "${self:service}/api/v2/alert"
 
   # Threat Stack setup
-  threatstack_api_key: "${env:THREATSTACK_API_KEY}"
-  threatstack_org_id: "${env:THREATSTACK_ORG_ID}"
-  threatstack_user_id: "${env:THREATSTACK_USER_ID}"
+  parameters:
+    ThreatStackApiKey:
+      Type: String
+      Default: "${env:THREATSTACK_API_KEY}"
+      Description: "Threat Stack API key"
+    ThreatStackOrgId:
+      Type: String
+      Default: "${env:THREATSTACK_ORG_ID}"
+      Description: "Threat Stack org ID"
+    ThreatStackUserId:
+      Type: String
+      Default: "${env:THREATSTACK_USER_ID}"
+      Description: "Threat Stack user ID"
 
   # Ensure consistent build environment; also avoid issue deploying from Mac
   # with Homebrew Python.
@@ -41,9 +51,12 @@ functions:
     environment:
       AWS_SNS_TOPIC_ARN:
         Ref: SnsTopic
-      THREATSTACK_API_KEY: "${self:custom.threatstack_api_key}"
-      THREATSTACK_ORG_ID: "${self:custom.threatstack_org_id}"
-      THREATSTACK_USER_ID: "${self:custom.threatstack_user_id}"
+      THREATSTACK_API_KEY:
+        Ref: ThreatStackApiKey
+      THREATSTACK_ORG_ID:
+        Ref: ThreatStackOrgId
+      THREATSTACK_USER_ID:
+        Ref: ThreatStackUserId
     events:
       - http:
           method: POST
