@@ -1,56 +1,91 @@
 env:
   global:
-  - DIST_DIR="${PWD}/dist"
-  - PROJECT_NAME=$(basename ${PWD})
-  - ARTIFACT_ID="${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}"
-  - S3_BUCKET="serverlessops-opensource-deploy-dev"
-  - AWS_SAM_TMPL_NAME="sam-template.yml"
-  - AWS_CFN_TMPL_NAME="cfn-template.yml"
-  - AWS_DEFAULT_REGION="us-east-1"
-  # AWS_ACCESS_KEY_ID
-  - secure: Kc3KdmqaCCSu6PhkqtG2kI8xb+5YdKwpxzNXhDzszdOf6j/PLC+oaJWEpwsYymuH6jyy9ApyoQ77wXcHV5nVgSa3fMldcuy8nsaqPEq1uyTF3nQiYrK8Idr70o04/v07Jy8tFWGYNDQTVkoywbs1hsbmRiV97Wf+GTAr13OVIE7YfwBH7LZzh0O0l0nkE8HQbBUe+P1yoSVVco4T6pCYjBgj26fPXNmS24Iz2MqPceus264DC6zNLpE7CxAKLXi0T9i3+fGheUuwhXa95COc3QaKzbgN1P4osWn3Hs+BKTE4GMg87yM9ECGIiCTHPyNFJCa5l6LQxS+RrTx2tXMdiR1FjVyGReOWPe3St6sPork+kjWghq+V300c/EqGPYwe52isUBiIUo8NZ8wVz5o22x3CXxAWtA8r7gC4kvCI2qsJjaviIMgTHXOtF62a1MpYUICNMkhj+Y38cBfnyJi9K8IL43+I8Lv1/Md3gVZRfi+g/GHBCkRsuQL07fS/8bzqoKkThhgSpRrPnDwG/vLsJKEjqeEuga4DrgWfCw3hQEI45FYoErxQ7pHUJBPeHafue0QtpjBp9KfSfLOJ+odEiEAowk6KD4Zw5tvkHXldmjA8TTvaXOKhhvaLTiUgUDGnhB6ttDWOUXJNte6XvjNAtcu8GE2na+QZXS0nMjdgLZ8=
-  # AWS_SECRET_ACCESS_KEY
-  - secure: YCCRTHydCXMbNFHCANYGdDP5Ip6FH1JupTHsGnPys8zFWj7KagHLQ7iS3/EUcrmWFaLYT/L88G6PIer5WdJti0erMjkYptPHskfPfOHbxINRLa2c25KFg++1+b0fdyGW8Lcm/34fqP9P2hLxmUMiZIhYBLIxIcWILIvb3T29DZP4NXRxV5hxQyPWokHcu1maxjsTrTn2f374AK1Mwj9SQbv5vUzViutAKWmVzW5R3CtZjZeeWUdKBiy93DUagj+hse8vE131OuX5rdJOx75BNKTXOD1kg0keyV8I7phttt/GY3sMS3BkoJKjyoZ2IHyT6iDl9Mff61VqmIcSdREDG2y0I+p7QhRozXFNqCJLtD6VOcf8SLb4F3XEZfk2cOxPbHwsYqYGjlvZYkGadTAeFXVL1w0gwjhOjnXTxkK86JA1e3uSwSWur530ApD2hqjIjjHCkvk3RD/dUGWn/wYWJ4429GDbYQquq7c9C+O6xgLKMX4v5kHJGSZUHvS1p1svS3nM6gHKdl09AVpaLhx9O3avsv09/+MKuyicUB2CVdst485YWBLCmXem35A+3X2fe2ci84FoOVvMr6c9uccfQfWgY7HFheo+Gtp2N1YIVqFYKP2V88YKsPRXlfnwXwtqy5J4AsxYpSyRBmxJeRY9EvRu7VE9MWhg4ePVvgfctmk=
-sudo: required
-services:
-- docker
-language: python
-python:
-- '3.6'
-install:
-- npm install -g serverless
-- npm install
-script:
-- true
+    - DIST_DIR="${PWD}/dist"
+    - PROJECT_NAME=$(basename ${PWD})
+    - ARTIFACT_ID="${TRAVIS_COMMIT}-${TRAVIS_BUILD_NUMBER}"
+    - S3_BUCKET="serverlessops-opensource-deploy-dev"
+    - S3_BUILD_PREFIX="${PROJECT_NAME}/${ARTIFACT_ID}/build"
+    - S3_DEPLOY_PREFIX="${PROJECT_NAME}/${ARTIFACT_ID}/deploy"
+    - AWS_SAM_TMPL_NAME="sam-template.yml"
+    - AWS_CFN_TMPL_NAME="cfn-template.yml"
+    - AWS_DEFAULT_REGION="us-east-1"
+    # AWS_ACCESS_KEY_ID
+    - secure: Kc3KdmqaCCSu6PhkqtG2kI8xb+5YdKwpxzNXhDzszdOf6j/PLC+oaJWEpwsYymuH6jyy9ApyoQ77wXcHV5nVgSa3fMldcuy8nsaqPEq1uyTF3nQiYrK8Idr70o04/v07Jy8tFWGYNDQTVkoywbs1hsbmRiV97Wf+GTAr13OVIE7YfwBH7LZzh0O0l0nkE8HQbBUe+P1yoSVVco4T6pCYjBgj26fPXNmS24Iz2MqPceus264DC6zNLpE7CxAKLXi0T9i3+fGheUuwhXa95COc3QaKzbgN1P4osWn3Hs+BKTE4GMg87yM9ECGIiCTHPyNFJCa5l6LQxS+RrTx2tXMdiR1FjVyGReOWPe3St6sPork+kjWghq+V300c/EqGPYwe52isUBiIUo8NZ8wVz5o22x3CXxAWtA8r7gC4kvCI2qsJjaviIMgTHXOtF62a1MpYUICNMkhj+Y38cBfnyJi9K8IL43+I8Lv1/Md3gVZRfi+g/GHBCkRsuQL07fS/8bzqoKkThhgSpRrPnDwG/vLsJKEjqeEuga4DrgWfCw3hQEI45FYoErxQ7pHUJBPeHafue0QtpjBp9KfSfLOJ+odEiEAowk6KD4Zw5tvkHXldmjA8TTvaXOKhhvaLTiUgUDGnhB6ttDWOUXJNte6XvjNAtcu8GE2na+QZXS0nMjdgLZ8=
+    # AWS_SECRET_ACCESS_KEY
+    - secure: YCCRTHydCXMbNFHCANYGdDP5Ip6FH1JupTHsGnPys8zFWj7KagHLQ7iS3/EUcrmWFaLYT/L88G6PIer5WdJti0erMjkYptPHskfPfOHbxINRLa2c25KFg++1+b0fdyGW8Lcm/34fqP9P2hLxmUMiZIhYBLIxIcWILIvb3T29DZP4NXRxV5hxQyPWokHcu1maxjsTrTn2f374AK1Mwj9SQbv5vUzViutAKWmVzW5R3CtZjZeeWUdKBiy93DUagj+hse8vE131OuX5rdJOx75BNKTXOD1kg0keyV8I7phttt/GY3sMS3BkoJKjyoZ2IHyT6iDl9Mff61VqmIcSdREDG2y0I+p7QhRozXFNqCJLtD6VOcf8SLb4F3XEZfk2cOxPbHwsYqYGjlvZYkGadTAeFXVL1w0gwjhOjnXTxkK86JA1e3uSwSWur530ApD2hqjIjjHCkvk3RD/dUGWn/wYWJ4429GDbYQquq7c9C+O6xgLKMX4v5kHJGSZUHvS1p1svS3nM6gHKdl09AVpaLhx9O3avsv09/+MKuyicUB2CVdst485YWBLCmXem35A+3X2fe2ci84FoOVvMr6c9uccfQfWgY7HFheo+Gtp2N1YIVqFYKP2V88YKsPRXlfnwXwtqy5J4AsxYpSyRBmxJeRY9EvRu7VE9MWhg4ePVvgfctmk=
 
-before_deploy:
-- sls package -v -s dev -r us-east-1 -p $DIST_DIR
-- rm -rf ${DIST_DIR}/requirements
-- sls sam export --output ${DIST_DIR}/${AWS_SAM_TMPL_NAME}
-- pip install awscli
-# NOTE: This is technically a deploy step because the deploy artifact gets
-# uploaded but it appears I can't order deploy steps to ensure everything is
-# created before the S3 sync.
-#
-# FIXME: We're ending up with dist in here.  Need to fix that.
-- aws cloudformation package --template-file ${DIST_DIR}/${AWS_SAM_TMPL_NAME} --output-template-file ${DIST_DIR}/${AWS_CFN_TMPL_NAME} --s3-bucket ${S3_BUCKET} --s3-prefix ${PROJECT_NAME}/${ARTIFACT_ID}
-- ls -al
+stages:
+  - build
+  - name: deploy
+    if: branch = master
 
-deploy:
-  - provider: s3
-    skip_cleanup: true
-    bucket: "$S3_BUCKET"
-    upload_dir: "${PROJECT_NAME}/${ARTIFACT_ID}"
-    local_dir: "$DIST_DIR"
-    acl: public_read
-    on:
-      repo: "$TRAVIS_REPO_SLUG"
-    access_key_id: "$AWS_ACCESS_KEY_ID"
-    secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+jobs:
+  include:
+    - stage: build
+      sudo: required
+      services:
+        - docker
+      language: python
+      python: '3.6'
+      install:
+        - npm install -g serverless
+        - npm install
+      script: skip
+      before_deploy:
+        - sls package -v -s dev -r us-east-1 -p $DIST_DIR
+        - cp serverless.yml $DIST_DIR
+        # python-requirements directory
+        - rm -rf ${DIST_DIR}/requirements
+      deploy:
+        - provider: s3
+          skip_cleanup: true
+          bucket: "$S3_BUCKET"
+          upload_dir: "${PROJECT_NAME}/${ARTIFACT_ID}/build"
+          local_dir: "$DIST_DIR"
+          acl: public_read
+          on:
+            repo: "$TRAVIS_REPO_SLUG"
+          access_key_id: "$AWS_ACCESS_KEY_ID"
+          secret_access_key: "$AWS_SECRET_ACCESS_KEY"
 
-# Update LATEST object to redirect to latest deploy CFN template. Make sure
-# README.md is updated if this ever changes to a new location.
-after_deploy:
-- ls -al
-- aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${PROJECT_NAME}/${ARTIFACT_ID}/${AWS_CFN_TMPL_NAME}" --metadata Cache-Control=60
-- aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/${PROJECT_NAME}/${ARTIFACT_ID}/${AWS_SAM_TMPL_NAME}" --metadata Cache-Control=60
+    - stage: deploy
+      language: python
+      python: '3.6'
+      install:
+        - npm install -g serverless
+        - npm install
+        - pip install awscli
+      script: skip
+      before_deploy:
+        # We reuse the artifacts from the build stage which we place into tmp.
+        - mkdir tmp
+        - aws s3 cp s3://${S3_BUCKET}/${S3_BUILD_PREFIX}/${PROJECT_NAME}.zip ./
+        - aws s3 cp s3://${S3_BUCKET}/${S3_BUILD_PREFIX}/serverless.yml ./tmp/
+        - unzip ${PROJECT_NAME}.zip -d tmp
+        - cd tmp
+        - mkdir $DIST_DIR
+        # all our artifacts from this stage will be in $DIST_DIR. However,
+        # `aws cloudformation package` will upload the SAM code deployable.
+        - sls sam export --output ${DIST_DIR}/${AWS_SAM_TMPL_NAME}
+        - aws cloudformation package --template-file ${DIST_DIR}/${AWS_SAM_TMPL_NAME} --output-template-file ${DIST_DIR}/${AWS_CFN_TMPL_NAME} --s3-bucket ${S3_BUCKET} --s3-prefix ${S3_DEPLOY_PREFIX}
+      deploy:
+        - provider: s3
+          skip_cleanup: true
+          bucket: "$S3_BUCKET"
+          upload_dir: "${PROJECT_NAME}/${ARTIFACT_ID}/deploy"
+          local_dir: "$DIST_DIR"
+          acl: public_read
+          on:
+            repo: "$TRAVIS_REPO_SLUG"
+          access_key_id: "$AWS_ACCESS_KEY_ID"
+          secret_access_key: "$AWS_SECRET_ACCESS_KEY"
+
+      # Update LATEST object to redirect to latest deploy CFN template. Make sure
+      # README.md is updated if this ever changes to a new location.
+      after_deploy:
+        # XXX: Need to make deploy object public and this is a dirty hack since
+        # `aws cloudformation package` doesn't allow setting the ACL.
+        - aws s3 cp --recursive --acl public-read s3://${S3_BUCKET}/${S3_DEPLOY_PREFIX}/ s3://${S3_BUCKET}/${S3_DEPLOY_PREFIX}/
+        # Update redirect objects
+        - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${S3_DEPLOY_PREFIX}/${AWS_CFN_TMPL_NAME}" --metadata Cache-Control=60
+        - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/$${S3_DEPLOY_PREFIX}/${AWS_SAM_TMPL_NAME}" --metadata Cache-Control=60
