@@ -146,6 +146,12 @@ resources:
       Description: "SNS Topic ARN; used by deployed subscribers"
       Value:
         Ref: "SnsTopic"
+      Export:
+        Name:
+          Fn::Join:
+            - "-"
+            - - Ref: "AWS::StackName"
+              - "SnsTopicArn"
 
     SnsConfirmSubscriptionIamManagedPolicyArn:
       Description: "ARN of IAM managed policy for subscription confirmation"
@@ -167,7 +173,6 @@ resources:
             - Ref: ApiGatewayRestApi
             - ".execute-api.us-east-1.amazonaws.com/${self:provider.stage}"
             - "/${self:custom.endpoint_path}"
-
       Export:
         Name:
           Fn::Join:
