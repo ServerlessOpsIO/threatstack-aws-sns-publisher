@@ -98,7 +98,7 @@ jobs:
           on:
             repo: "$TRAVIS_REPO_SLUG"
         - provider: script
-          script: aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/$${S3_DEPLOY_PREFIX}/${AWS_SAM_TMPL_NAME}" --cache-control "max-age=60"
+          script: aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/${S3_DEPLOY_PREFIX}/${AWS_SAM_TMPL_NAME}" --cache-control "max-age=60"
           on:
             repo: "$TRAVIS_REPO_SLUG"
 
