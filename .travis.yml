@@ -42,7 +42,7 @@ jobs:
           bucket: "$S3_BUCKET"
           upload_dir: "${PROJECT_NAME}/${ARTIFACT_ID}/build"
           local_dir: "$DIST_DIR"
-          acl: public_read
+          acl: private
           on:
             repo: "$TRAVIS_REPO_SLUG"
           access_key_id: "$AWS_ACCESS_KEY_ID"
