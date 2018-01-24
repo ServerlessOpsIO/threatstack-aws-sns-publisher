@@ -34,7 +34,7 @@ def _get_alert(webhook):
 def _get_events_from_alert(alert):
     '''Return a list of event detail from Threat stack alert.'''
     alert_id = alert.get('id')
-    return threatstack_client.alerts.event(alert_id).get('events', [])
+    return threatstack_client.alerts.events(alert_id).get('events', [])
 
 
 def _get_rule_from_alert(alert):
