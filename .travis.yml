@@ -92,6 +92,8 @@ jobs:
         - pip install awscli
       script: skip
 
+      # FIXME: There's still an issue with browser caching an old link. May
+      # need to look at rewriting the contents of the file.
       deploy:
         - provider: script
           script: aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${S3_DEPLOY_PREFIX}/${AWS_CFN_TMPL_NAME}" --cache-control "max-age=60"
