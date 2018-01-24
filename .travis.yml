@@ -87,5 +87,5 @@ jobs:
         # `aws cloudformation package` doesn't allow setting the ACL.
         - aws s3 cp --recursive --acl public-read s3://${S3_BUCKET}/${S3_DEPLOY_PREFIX}/ s3://${S3_BUCKET}/${S3_DEPLOY_PREFIX}/
         # Update redirect objects
-        - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${S3_DEPLOY_PREFIX}/${AWS_CFN_TMPL_NAME}" --metadata Cache-Control=60
-        - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/$${S3_DEPLOY_PREFIX}/${AWS_SAM_TMPL_NAME}" --metadata Cache-Control=60
+        - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/CFN-DEPLOY-LATEST --website-redirect-location "https://console.aws.amazon.com/cloudformation/home?region=${AWS_DEFAULT_REGION}#/stacks/new?stackName=${PROJECT_NAME}&templateURL=https://${S3_BUCKET}.s3.amazonaws.com/${S3_DEPLOY_PREFIX}/${AWS_CFN_TMPL_NAME}" --cache-control "max-age=60"
+        - aws s3api put-object --acl public-read --bucket $S3_BUCKET --key ${PROJECT_NAME}/SAM-TEMPLATE-LATEST --website-redirect-location "https://${S3_BUCKET}.s3.amazonaws.com/$${S3_DEPLOY_PREFIX}/${AWS_SAM_TMPL_NAME}" --cache-control "max-age=60"
