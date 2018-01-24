@@ -110,5 +110,6 @@ def handler(event, context):
         "body": json.dumps(response_body)
     }
 
+    _logger.info('handler(): response={}'.format(json.dumps(response)))
     return response
 
