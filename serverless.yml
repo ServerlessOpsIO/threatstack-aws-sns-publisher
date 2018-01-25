@@ -8,6 +8,7 @@ plugins:
 custom:
   stage: "${opt:stage, env:SLS_STAGE, 'dev'}"
   profile: "${opt:aws-profile, env:AWS_PROFILE, env:AWS_DEFAULT_PROFILE, 'default'}"
+  log_level: "${env:LOG_LEVEL, 'INFO'}"
   endpoint_path: "${self:service}/api/v2/alert"
 
   # Threat Stack setup
@@ -49,6 +50,7 @@ functions:
         Ref: ThreatStackOrgId
       THREATSTACK_USER_ID:
         Ref: ThreatStackUserId
+      LOG_LEVEL: "${self:custom.log_level}"
     events:
       - http:
           method: POST
