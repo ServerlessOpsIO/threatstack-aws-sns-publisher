@@ -25,6 +25,16 @@ threatstack_client = ThreatStack(
 AWS_SNS_TOPIC_ARN = os.environ.get('AWS_SNS_TOPIC_ARN')
 sns_client = boto3.client('sns')
 
+def _get_agent_from_alert(alert):
+    '''Return a ruleset from a Threat Stack alert.'''
+    agent_id = alert.get('agentId')
+    if agent_id is not None:
+        agent = threatstack_client.agents.get(agent_id)
+    else:
+        agent = {}
+    return agent
+
+
 def _get_alert(webhook):
     '''Return an alert from Threat Stack by ID.'''
     alert_id = webhook.get('id')
@@ -57,6 +67,9 @@ def _get_alert_detail(webhook_alert):
 
     alert = _get_alert(webhook_alert)
     alert_detail['alert'] = alert
+
+    agent = _get_agent_from_alert(alert)
+    alert_detail['agent'] = agent
 
     events = _get_events_from_alert(alert)
     alert_detail['events'] = events
