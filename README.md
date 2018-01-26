@@ -24,6 +24,47 @@ $ npm install
 $ THREATSTACK_API_KEY=<THREATSTACK_API_KEY> THREATSTACK_ORG_ID=<THREATSTACK_ORG_ID> THREATSTACK_USER_ID=<THREATSTACK_USER_ID> serverless deploy -v
 ```
 
+## Configuration
+After this service is deployed, obtained the _WebHookEndpoint_ output value from the stack and enter that as the webhook url on the Threat Stack integrations screen.
+
+```
+$ aws cloudformation describe-stacks --stack-name <STACK_NAME> --query "[Stacks][0][0].Outputs"
+[
+    {
+        "OutputKey": "ThreatStackAwsSnsPublisherLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:529602709954:function:threatstack-aws-sns-publisher-prime-ThreatStackAwsSnsPublisher:70",
+        "Description": "Current Lambda function version"
+    },
+    {
+        "OutputKey": "SnsConfirmSubscriptionIamManagedPolicyArn",
+        "OutputValue": "arn:aws:iam::529602709954:policy/threatstack-aws-sns-publisher-prime-SnsConfirmSubscriptionIamManagedPolicy-9EHKMD539ZUP",
+        "Description": "ARN of IAM managed policy for subscription confirmation",
+        "ExportName": "threatstack-aws-sns-publisher-prime-SnsConfirmSubscriptionIamManagedPolicyArn"
+    },
+    {
+        "OutputKey": "WebHookEndpoint",
+        "OutputValue": "https://1f1axqumck.execute-api.us-east-1.amazonaws.com/prime/threatstack-aws-sns-publisher/api/v2/alert",
+        "Description": "Webhook endpoint",
+        "ExportName": "threatstack-aws-sns-publisher-prime-WebHookEndpoint"
+    },
+    {
+        "OutputKey": "SnsTopicArn",
+        "OutputValue": "arn:aws:sns:us-east-1:529602709954:threatstack-aws-sns-publisher-prime-SnsTopic-CQNDFPKNTJGC",
+        "Description": "SNS Topic ARN; used by deployed subscribers",
+        "ExportName": "threatstack-aws-sns-publisher-prime-SnsTopicArn"
+    },
+    {
+        "OutputKey": "ServiceEndpoint",
+        "OutputValue": "https://1f1axqumck.execute-api.us-east-1.amazonaws.com/prime",
+        "Description": "URL of the service endpoint"
+    },
+    {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "threatstack-aws-sns-publ-serverlessdeploymentbuck-wnocrqlbkkye"
+    }
+]
+```
+
 ## Development
 This repository uses Serverless Framework for managing the development life cycle.  To install Serverless Framework, ensure you have NodeJS and the [NPM](https://www.npmjs.com/get-npm) package manager installed.  Then perform the following.
 
