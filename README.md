@@ -1,6 +1,6 @@
 # threatstack-aws-sns-publisher
 
-[![Build Status](https://travis-ci.org/ServerlessOpsIO/threatstack-aws-sns-publisher.svg?branch=master)](https://travis-ci.org/ServerlessOpsIO/threatstack-aws-sns-publisher) [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause) 
+[![Build Status](https://travis-ci.org/ServerlessOpsIO/threatstack-aws-sns-publisher.svg?branch=master)](https://travis-ci.org/ServerlessOpsIO/threatstack-aws-sns-publisher) [![License](https://img.shields.io/badge/License-BSD%202--Clause-orange.svg)](https://opensource.org/licenses/BSD-2-Clause)
 
 Receives webhooks from Threat Stack and publishes alert details to an SNS topic.  Subsribe additional services to the SNS topic to aggregate alert data to multiple services.  To see example subscribers for this service, checkout our [GitHub org](https://github.com/ServerlessOpsIO?q=threatstack-)!
 
